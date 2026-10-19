@@ -63,7 +63,8 @@ public class LoincResourceGenerator {
   private static final String LOINC_ORDER_OBS = "ORDER_OBS";
   private static final String LOINC_CLASS = "CLASS";
 
-  private static final String LABCODESET_STATUS_PROPERTY = "STATUS";
+  private static final String LABCODESET_STATUS_PROPERTY_DEP = "STATUS"; // deprecated because indistinguishable from Loinc
+  private static final String LABCODESET_STATUS_PROPERTY = "LabcodesetStatus";
   private static final String LABCODESET_MATERIAL_PROPERTY = "MATERIAL";
   private static final String LABCODESET_UNITS_PROPERTY = "EXAMPLE_UCUM_UNITS";
 
@@ -102,6 +103,7 @@ public class LoincResourceGenerator {
 
     codeSystem.setSupplements(Constants.LOINC_CS_URI + "|" + loincVersion);
 
+    codeSystem.addProperty(createProperty(LABCODESET_STATUS_PROPERTY_DEP, "Labcodeset LOINC concept status (deprecated)", PropertyType.STRING));
     codeSystem.addProperty(createProperty(LABCODESET_STATUS_PROPERTY, "Labcodeset LOINC concept status", PropertyType.STRING));
     codeSystem.addProperty(createProperty(LABCODESET_MATERIAL_PROPERTY, "Labcodeset SNOMED CT material", PropertyType.CODING));
     codeSystem.addProperty(createProperty(LABCODESET_UNITS_PROPERTY, "Labcodeset UCUM units", PropertyType.CODING));
@@ -121,7 +123,10 @@ public class LoincResourceGenerator {
     for (LabConcept labConcept : pub.getLabConcepts().getLabConcept()) {
       ConceptDefinitionComponent concept = new ConceptDefinitionComponent();
       concept.addProperty(
+          new ConceptPropertyComponent(new CodeType(LABCODESET_STATUS_PROPERTY_DEP), new StringType(labConcept.getStatus().value())));
+      concept.addProperty(
           new ConceptPropertyComponent(new CodeType(LABCODESET_STATUS_PROPERTY), new StringType(labConcept.getStatus().value())));
+          
 
       setLoincConceptProperties(labConcept.getLoincConcept(), concept, concepts, processedLoincParts);
 
